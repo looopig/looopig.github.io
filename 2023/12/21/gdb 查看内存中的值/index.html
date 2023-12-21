@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en,zh,default">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="looopig">
+
+
+
+
+
+<title>gdb 查看内存中的值 | looopig&#39;s blog</title>
+
+
+
+    <link rel="icon" href="/pig.svg">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Looopig&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">归档</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/link">链接</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Looopig&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">归档</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/link">链接</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">gdb 查看内存中的值</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">looopig</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 21, 2023&nbsp;&nbsp;21:15:44</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/C-C/">C/C++</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>gdb 中是通过 <code>x</code> 命令查看程序运行中内存的值</p>
+<p>通过 <code>help x</code> 查看文档</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(gdb) help x</span><br><span class="line">Examine memory: x/FMT ADDRESS.</span><br><span class="line">ADDRESS is an expression for the memory address to examine.</span><br><span class="line">FMT is a repeat count followed by a format letter and a size letter.</span><br><span class="line">Format letters are o(octal), x(hex), d(decimal), u(unsigned decimal),</span><br><span class="line">  t(binary), f(float), a(address), i(instruction), c(char), s(string)</span><br><span class="line">  and z(hex, zero padded on the left).</span><br><span class="line">Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).</span><br><span class="line">The specified number of objects of the specified size are printed</span><br><span class="line">according to the format.  If a negative number is specified, memory is</span><br><span class="line">examined backward from the address.</span><br><span class="line"></span><br><span class="line">Defaults for format and size letters are those previously used.</span><br><span class="line">Default count is 1.  Default address is following last thing printed</span><br><span class="line">with this command or &quot;print&quot;.</span><br></pre></td></tr></table></figure>
+
+<p>则可以知道一共需要四个参数</p>
+<ul>
+<li><p><code>ADDRESS</code>：需要查看的地址的起始地址</p>
+<blockquote>
+<p>需要注意的是，<code>ADDRESS</code> 是地址，并不是变量，若是想查看变量 <code>x</code> 的内存值，则应该使用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/FMT &amp;x</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p><code>F</code>：表明需看看几个单位的内存机器数</p>
+<blockquote>
+<p>与 <code>T</code> 选项相关</p>
+<p>若是 <code>T</code> 采用 <code>b</code> 则一个单位显示一个字节，若要看完一个 <code>int</code> 型变量，则要查看4个单位的内存</p>
+</blockquote>
+</li>
+<li><p><code>M</code>：内存中的值采用什么方式显示</p>
+<blockquote>
+<p><strong>常用的选项</strong></p>
+<ul>
+<li>x：按十六进制格式显示变量</li>
+<li>d：按十进制格式显示变量</li>
+<li>u：按十进制格式显示无符号整型</li>
+<li>o：按八进制格式显示变量</li>
+<li>t：按二进制格式显示变量</li>
+</ul>
+</blockquote>
+</li>
+<li><p><code>T</code>：显示一个地址单元的长度</p>
+<blockquote>
+<p><strong>常用的选项</strong></p>
+<ul>
+<li>b：表示单字节</li>
+<li>h：表示双字节</li>
+<li>w：表示四字节</li>
+<li>g：表示八字节</li>
+</ul>
+<p>根据想观测的变量选择，及若是一个 <code>char</code> 数组，则可以直接采用 <code>b</code>，因为一个 <code>char</code> 占一个字节，若是整型则可以使用 <code>w</code></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="用-gdb-查看机器是小端还是大端存储"><a href="#用-gdb-查看机器是小端还是大端存储" class="headerlink" title="用 gdb 查看机器是小端还是大端存储"></a>用 gdb 查看机器是小端还是大端存储</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 程序中</span></span><br><span class="line"><span class="type">int</span> i = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// gdb 中</span></span><br><span class="line">x/<span class="number">4</span>tb &amp;i</span><br><span class="line">    </span><br><span class="line"><span class="comment">// 输出为</span></span><br><span class="line"><span class="number">0x7fffffffd76c</span>:	<span class="number">00010100</span>	<span class="number">00000000</span>	<span class="number">00000000</span>	<span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+
+<p>由此可以看出是以小端存储的</p>
+<p><strong><code>x/4tb &amp;i</code> 分解</strong></p>
+<ul>
+<li><p><code>4</code>：由于 <code>i</code> 是 <code>int</code> 占用4字节，内存是以字节为单位划分地址</p>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 再运行</span></span><br><span class="line">x/<span class="number">4</span>tb &amp;i+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="number">0x7fffffffd770</span>:	<span class="number">01101100</span>	<span class="number">11010111</span>	<span class="number">11111111</span>	<span class="number">11111111</span></span><br></pre></td></tr></table></figure>
+
+<p>地址为 <code>0x7fffffffd770</code> 相比 <code>0x7fffffffd76c</code> 差值为4，则可以证明是以字节为单位划分</p>
+</blockquote>
+</li>
+<li><p><code>t</code>：方便看具体的二进制机器数</p>
+</li>
+<li><p><code>b</code>：采用一个字节显示内容</p>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>looopig</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://looopig.github.io/2023/12/21/gdb%20%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E5%80%BC/">https://looopig.github.io/2023/12/21/gdb%20%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E5%80%BC/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/C-C/"># C/C++</a>
+                    
+                        <a href="/tags/%E8%B0%83%E8%AF%95/"># 调试</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/12/20/leetcode-2828/">leetcode_2828</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© looopig | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
