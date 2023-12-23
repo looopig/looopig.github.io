@@ -144,7 +144,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">December 20, 2023&nbsp;&nbsp;0:21:22</a>
+                        Date: <a href="#">December 23, 2023&nbsp;&nbsp;9:11:33</a>
                         </span>
                     
                     
@@ -160,12 +160,17 @@
         </header>
 
         <div class="post-content">
-            <p>给你一个字符串数组 <code>words</code> 和一个字符串 <code>s</code> ，请你判断 <code>s</code> 是不是 <code>words</code> 的 <strong>首字母缩略词</strong> 。</p>
-<p>如果可以按顺序串联 <code>words</code> 中每个字符串的第一个字符形成字符串 <code>s</code> ，则认为 <code>s</code> 是 <code>words</code> 的首字母缩略词。例如，<code>&quot;ab&quot;</code> 可以由 <code>[&quot;apple&quot;, &quot;banana&quot;]</code> 形成，但是无法从 <code>[&quot;bear&quot;, &quot;aardvark&quot;]</code> 形成。</p>
-<p>如果 <code>s</code> 是 <code>words</code> 的首字母缩略词，返回 <code>true</code> ；否则，返回 <code>false</code> </p>
+            <p>给你一个整数数组 <code>piles</code> ，数组 <strong>下标从 0 开始</strong> ，其中 <code>piles[i]</code> 表示第 <code>i</code> 堆石子中的石子数量。另给你一个整数 <code>k</code> ，请你执行下述操作 <strong>恰好</strong> <code>k</code> 次：</p>
+<ul>
+<li>选出任一石子堆 <code>piles[i]</code> ，并从中 <strong>移除</strong> <code>floor(piles[i] / 2)</code> 颗石子。</li>
+</ul>
+<p><strong>注意：</strong>你可以对 <strong>同一堆</strong> 石子多次执行此操作。</p>
+<p>返回执行 <code>k</code> 次操作后，剩下石子的 <strong>最小</strong> 总数。</p>
+<p><code>floor(x)</code> 为 <strong>小于</strong> 或 <strong>等于</strong> <code>x</code> 的 <strong>最大</strong> 整数。（即，对 <code>x</code> 向下取整）。</p>
 <hr>
-<p>非常简单的一道题，遍历一遍就能通过</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isAcronym</span><span class="params">(vector&lt;string&gt;&amp; words, string s)</span> </span>&#123;</span><br><span class="line">        vector&lt;string&gt;::iterator iterVec;</span><br><span class="line">        string::iterator iterStr;</span><br><span class="line">        <span class="keyword">for</span> (iterVec = words.<span class="built_in">begin</span>(), iterStr = s.<span class="built_in">begin</span>(); </span><br><span class="line">            iterVec != words.<span class="built_in">end</span>() &amp;&amp; iterStr != s.<span class="built_in">end</span>(); iterVec++, iterStr++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((*iterVec)[<span class="number">0</span>] != *iterStr) <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (iterStr != s.<span class="built_in">end</span>() || iterVec != words.<span class="built_in">end</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>很好理解的一道题，明摆着都知道是每次找到最大的一个进行 <code>floor</code> 操作，但是选择最大的元素的这一操作的时间复杂度要注意，经常使用的则可能是 <code>sort</code> 但是 C++ 中这个函数的时间复杂度略大，应该使用堆排序，堆排序时间复杂度为 $O(\log_2n)$ </p>
+<p>C++ 标准模板库 STL 中提供了优先队列，优先队列的本质则是堆</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">minStoneSum</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;piles, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">		<span class="function">priority_queue&lt;<span class="type">int</span>&gt; <span class="title">q</span><span class="params">(piles.begin(), piles.end())</span></span>;</span><br><span class="line">    	<span class="type">int</span> mid;</span><br><span class="line">    	<span class="keyword">for</span> (<span class="type">int</span> count = <span class="number">0</span>; count &lt; k; count++) &#123;</span><br><span class="line">      		mid = (q.<span class="built_in">top</span>() + <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">      		q.<span class="built_in">pop</span>();</span><br><span class="line">      		q.<span class="built_in">push</span>(mid);</span><br><span class="line">    	&#125;</span><br><span class="line">    	<span class="type">int</span> length = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">      		length += q.<span class="built_in">top</span>();</span><br><span class="line">      		q.<span class="built_in">pop</span>();</span><br><span class="line">    	&#125;</span><br><span class="line">        <span class="keyword">return</span> length;</span><br><span class="line">  	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
 
@@ -185,7 +190,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://looopig.github.io/2023/12/20/leetcode-2828/">https://looopig.github.io/2023/12/20/leetcode-2828/</a></span>
+                        <span><a href="https://looopig.github.io/2023/12/23/leetcode-1962/">https://looopig.github.io/2023/12/23/leetcode-1962/</a></span>
                     </p>
                 
                 
@@ -222,10 +227,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/12/21/gdb%20%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E5%80%BC/">gdb 查看内存中的值</a>
             
-            
-            <a class="next" rel="next" href="/2023/12/11/%E7%A7%BB%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E7%BB%86%E8%8A%82/">移位运算的细节</a>
+            <a class="next" rel="next" href="/2023/12/21/leetcode-2866/">leetcode_2866</a>
             
         </section>
 
