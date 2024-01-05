@@ -13,7 +13,7 @@
 
 
 
-<title>leetcode_1962 | looopig&#39;s blog</title>
+<title>leetcode_1276 | looopig&#39;s blog</title>
 
 
 
@@ -135,7 +135,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">leetcode_1962</h1>
+            <h1 class="post-title">leetcode_1276</h1>
             
                 <div class="post-meta">
                     
@@ -144,7 +144,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">December 23, 2023&nbsp;&nbsp;9:11:33</a>
+                        Date: <a href="#">December 25, 2023&nbsp;&nbsp;10:08:34</a>
                         </span>
                     
                     
@@ -160,17 +160,17 @@
         </header>
 
         <div class="post-content">
-            <p>给你一个整数数组 <code>piles</code> ，数组 <strong>下标从 0 开始</strong> ，其中 <code>piles[i]</code> 表示第 <code>i</code> 堆石子中的石子数量。另给你一个整数 <code>k</code> ，请你执行下述操作 <strong>恰好</strong> <code>k</code> 次：</p>
+            <p>圣诞活动预热开始啦，汉堡店推出了全新的汉堡套餐。为了避免浪费原料，请你帮他们制定合适的制作计划。</p>
+<p>给你两个整数 <code>tomatoSlices</code> 和 <code>cheeseSlices</code>，分别表示番茄片和奶酪片的数目。不同汉堡的原料搭配如下：</p>
 <ul>
-<li>选出任一石子堆 <code>piles[i]</code> ，并从中 <strong>移除</strong> <code>floor(piles[i] / 2)</code> 颗石子。</li>
+<li><strong>巨无霸汉堡：</strong>4 片番茄和 1 片奶酪</li>
+<li><strong>小皇堡：</strong>2 片番茄和 1 片奶酪</li>
 </ul>
-<p><strong>注意：</strong>你可以对 <strong>同一堆</strong> 石子多次执行此操作。</p>
-<p>返回执行 <code>k</code> 次操作后，剩下石子的 <strong>最小</strong> 总数。</p>
-<p><code>floor(x)</code> 为 <strong>小于</strong> 或 <strong>等于</strong> <code>x</code> 的 <strong>最大</strong> 整数。（即，对 <code>x</code> 向下取整）。</p>
+<p>请你以 <code>[total_jumbo, total_small]</code>（[巨无霸汉堡总数，小皇堡总数]）的格式返回恰当的制作方案，使得剩下的番茄片 <code>tomatoSlices</code> 和奶酪片 <code>cheeseSlices</code> 的数量都是 <code>0</code>。</p>
+<p>如果无法使剩下的番茄片 <code>tomatoSlices</code> 和奶酪片 <code>cheeseSlices</code> 的数量为 <code>0</code>，就请返回 <code>[]</code>。</p>
 <hr>
-<p>很好理解的一道题，明摆着都知道是每次找到最大的一个进行 <code>floor</code> 操作，但是选择最大的元素的这一操作的时间复杂度要注意，经常使用的则可能是 <code>sort</code> 但是 C++ 中这个函数的时间复杂度略大，应该使用堆排序，堆排序时间复杂度为 $O(\log_2n)$ </p>
-<p>C++ 标准模板库 STL 中提供了优先队列，优先队列的本质则是堆</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">minStoneSum</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;piles, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">		<span class="function">priority_queue&lt;<span class="type">int</span>&gt; <span class="title">q</span><span class="params">(piles.begin(), piles.end())</span></span>;</span><br><span class="line">    	<span class="type">int</span> mid;</span><br><span class="line">    	<span class="keyword">for</span> (<span class="type">int</span> count = <span class="number">0</span>; count &lt; k; count++) &#123;</span><br><span class="line">      		mid = (q.<span class="built_in">top</span>() + <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">      		q.<span class="built_in">pop</span>();</span><br><span class="line">      		q.<span class="built_in">push</span>(mid);</span><br><span class="line">    	&#125;</span><br><span class="line">    	<span class="type">int</span> length = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">      		length += q.<span class="built_in">top</span>();</span><br><span class="line">      		q.<span class="built_in">pop</span>();</span><br><span class="line">    	&#125;</span><br><span class="line">        <span class="keyword">return</span> length;</span><br><span class="line">  	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>数学求解方式就能够是的时间负责度与空间复杂度为 $O(1)$ 级别</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">numOfBurgers</span><span class="params">(<span class="type">int</span> tomatoSlices, <span class="type">int</span> cheeseSlices)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> x, y;</span><br><span class="line">        <span class="keyword">if</span> ((tomatoSlices - <span class="number">2</span> * cheeseSlices) % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            x = (tomatoSlices - <span class="number">2</span> * cheeseSlices) / <span class="number">2</span>;</span><br><span class="line">            y = cheeseSlices - x;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x &gt;= <span class="number">0</span> &amp;&amp; y &gt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(&#123;x, y&#125;);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 
 
@@ -190,7 +190,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://looopig.github.io/2023/12/23/leetcode-1962/">https://looopig.github.io/2023/12/23/leetcode-1962/</a></span>
+                        <span><a href="https://looopig.github.io/2023/12/25/leetcode-1276/">https://looopig.github.io/2023/12/25/leetcode-1276/</a></span>
                     </p>
                 
                 
@@ -227,10 +227,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/12/25/leetcode-1276/">leetcode_1276</a>
+                <a class="prev" rel="prev" href="/2024/01/05/leetcode-1944/">leetcode_1962</a>
             
             
-            <a class="next" rel="next" href="/2023/12/21/leetcode-2866/">leetcode_2866</a>
+            <a class="next" rel="next" href="/2023/12/23/leetcode-1962/">leetcode_1962</a>
             
         </section>
 
